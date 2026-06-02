@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EV ChargeLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">⚡</div>
+        <div>
+          <h1>EV Charging</h1>
+          <p class="tagline">Smart EV charging, faster bookings.</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="action-pill" id="toggle-theme" aria-label="Toggle dark mode">🌙</button>
+        <button class="action-pill" id="toggle-contrast" aria-label="Toggle high contrast">🌓</button>
+        <button class="action-pill" id="toggle-text" aria-label="Toggle large text">A+</button>
+        <div class="language-picker">
+          <select id="language-select" aria-label="Choose language">
+            <option value="en">English</option>
+            <option value="te">తెలుగు</option>
+            <option value="hi">हिन्दी</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <nav class="navbar">
+      <div class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">☰</div>
+      <ul class="nav-items" id="main-nav">
+        <li><a href="#home" data-page="home" data-label="Home" class="nav-link active">Home</a></li>
+        <li class="dropdown">
+          <button class="dropdown-button" data-label="Services ▾">Services ▾</button>
+          <div class="dropdown-menu">
+            <a href="#booking" data-page="booking" data-label="Book a Slot">Book a Slot</a>
+            <a href="#status" data-page="status" data-label="Booking Status">Booking Status</a>
+            <a href="#history" data-page="history" data-label="History">History</a>
+          </div>
+        </li>
+        <li class="dropdown">
+          <button class="dropdown-button" data-label="Stations ▾">Stations ▾</button>
+          <div class="dropdown-menu">
+            <a href="#station-details" data-page="station-details" data-label="Station Details">Station Details</a>
+            <a href="#profile" data-page="profile" data-label="User Profile">User Profile</a>
+          </div>
+        </li>
+        <li><a href="#faq" data-page="faq" data-label="FAQ">FAQ</a></li>
+        <li><a href="#about" data-page="about" data-label="About">About</a></li>
+        <li><a href="#contact" data-page="contact" data-label="Contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section class="page active" id="home">
+        <section class="hero grid">
+          <div class="hero-copy">
+            <span class="eyebrow">Charge smarter, travel farther</span>
+            <h2>Find the nearest EV station and book your ideal charging slot.</h2>
+            <p>Compare availability, travel time, and cost in one place. Save time with instant booking, live status, and rewards.</p>
+            <div class="hero-actions">
+              <a href="#booking" class="btn btn-primary" data-page="booking">Book a Slot</a>
+              <a href="#station-details" class="btn btn-secondary" data-page="station-details">Explore Stations</a>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <div class="hero-card">
+              <h3>Quick search</h3>
+              <label for="search-location">Enter location</label>
+              <input type="text" id="search-location" placeholder="Type city, landmark or ZIP" autocomplete="off" />
+              <ul class="suggestions" id="location-suggestions"></ul>
+              <div class="station-preview">
+                <p>Nearest in 2.3 km</p>
+                <div class="station-chip">Fast charger • 4.9 ★ • ₹38/kWh</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel card-panel">
+          <div class="panel-header">
+            <div>
+              <h3>Available Stations Nearby</h3>
+              <p>Filter your search by charger type, availability, and price.</p>
+            </div>
+            <div class="filter-row">
+              <select id="filter-type" aria-label="Filter charger type">
+                <option value="all">All Charger Types</option>
+                <option value="fast">Fast</option>
+                <option value="normal">Normal</option>
+              </select>
+              <select id="filter-availability" aria-label="Filter availability">
+                <option value="all">Any Availability</option>
+                <option value="available">Available</option>
+                <option value="busy">Busy</option>
+              </select>
+              <select id="filter-price" aria-label="Filter price range">
+                <option value="all">Any Price</option>
+                <option value="low">Under ₹30/kWh</option>
+                <option value="mid">₹30 - ₹40/kWh</option>
+                <option value="high">Above ₹40/kWh</option>
+              </select>
+            </div>
+          </div>
+          <div class="station-grid" id="station-grid"></div>
+        </section>
+
+        <section class="panel map-panel">
+          <div class="panel-header">
+            <h3>Station Map</h3>
+            <p>Interactive overview of station locations and live availability.</p>
+          </div>
+          <div class="map-frame" id="map-frame">
+            <div class="google-map-container">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d31120.46972238214!2d78.3354183!3d13.0285268!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1700000000000"
+                width="100%"
+                height="420"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Google Maps"
+              ></iframe>
+            </div>
+            <div class="map-legend">
+              <span><span class="legend-dot available"></span>Available</span>
+              <span><span class="legend-dot busy"></span>Busy</span>
+              <span><span class="legend-dot reserved"></span>Reserved</span>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="booking">
+        <section class="panel booking-panel grid">
+          <div class="booking-form card-panel">
+            <div class="panel-header">
+              <h2>Reserve Your Charging Slot</h2>
+              <p>Fill in your details and review the estimate before confirming.</p>
+            </div>
+            <form id="booking-form">
+              <div class="form-grid">
+                <label>
+                  User Name
+                  <input type="text" id="booking-name" placeholder="Alex Morgan" required />
+                </label>
+                <label>
+                  Vehicle Number
+                  <input type="text" id="booking-vehicle" placeholder="EV-6412" required />
+                </label>
+                <label>
+                  Select Station
+                  <select id="booking-station" required></select>
+                </label>
+                <label>
+                  Booking Time
+                  <input type="datetime-local" id="booking-time" required />
+                </label>
+                <label>
+                  Charging Type
+                  <select id="booking-type" required>
+                    <option value="fast">Fast Charge</option>
+                    <option value="slow">Slow Charge</option>
+                  </select>
+                </label>
+                <label>
+                  Duration (mins)
+                  <input type="number" id="booking-duration" min="15" max="120" step="15" value="30" required />
+                </label>
+              </div>
+              <div class="booking-meta">
+                <div>
+                  <span>Travel time</span>
+                  <strong id="travel-time">-- mins</strong>
+                </div>
+                <div>
+                  <span>Arrival estimate</span>
+                  <strong id="arrival-time">--</strong>
+                </div>
+                <div>
+                  <span>Estimated cost</span>
+                  <strong id="estimated-cost">₹0.00</strong>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Preview Booking</button>
+                <button type="button" class="btn btn-secondary" id="reset-booking">Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="summary-card card-panel" id="booking-summary-card">
+            <div class="panel-header">
+              <h3>Booking Summary</h3>
+              <p>Review your reservation before confirmation.</p>
+            </div>
+            <div class="summary-block">
+              <p><strong>Name</strong><span id="summary-name">—</span></p>
+              <p><strong>Vehicle</strong><span id="summary-vehicle">—</span></p>
+              <p><strong>Station</strong><span id="summary-station">—</span></p>
+              <p><strong>When</strong><span id="summary-time">—</span></p>
+              <p><strong>Type</strong><span id="summary-type">—</span></p>
+              <p><strong>Duration</strong><span id="summary-duration">—</span></p>
+              <p><strong>Cost</strong><span id="summary-cost">—</span></p>
+            </div>
+            <div class="summary-actions">
+              <button class="btn btn-primary" id="confirm-booking">Confirm Reservation</button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="status">
+        <section class="panel card-panel status-panel">
+          <div class="panel-header">
+            <h2>Active Booking Status</h2>
+            <p>Track your current reservation and manage it instantly.</p>
+          </div>
+          <div class="status-card" id="active-status-card">
+            <div class="status-label"><span>Status</span><strong id="status-text">No active booking</strong></div>
+            <div class="status-details" id="status-details">
+              <div><strong>User</strong><span id="status-name">—</span></div>
+              <div><strong>Vehicle</strong><span id="status-vehicle">—</span></div>
+              <div><strong>Station</strong><span id="status-station">—</span></div>
+              <div><strong>Start</strong><span id="status-start">—</span></div>
+              <div><strong>Ends</strong><span id="status-expiry">—</span></div>
+              <div><strong>Countdown</strong><span id="status-countdown">—</span></div>
+            </div>
+            <div class="status-actions">
+              <button class="btn btn-secondary" id="reschedule-booking">Reschedule</button>
+              <button class="btn btn-danger" id="cancel-booking">Cancel</button>
+            </div>
+            <div class="status-alert" id="status-alert"></div>
+          </div>
+          <div class="history-panel">
+            <h3>Previous Bookings</h3>
+            <div id="status-history"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="profile">
+        <section class="panel card-panel profile-panel grid">
+          <div class="card-panel profile-form">
+            <div class="panel-header">
+              <h2>Profile</h2>
+              <p>Save your favorite settings and rewards.</p>
+            </div>
+            <form id="profile-form">
+              <label>
+                Full Name
+                <input type="text" id="profile-name" placeholder="Alex Morgan" required />
+              </label>
+              <label>
+                Vehicle Number
+                <input type="text" id="profile-vehicle" placeholder="EV-6412" required />
+              </label>
+              <label>
+                Preferred Station
+                <select id="profile-station"></select>
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Profile</button>
+              </div>
+            </form>
+          </div>
+          <div class="card-panel rewards-card">
+            <div class="panel-header">
+              <h3>Loyalty Rewards</h3>
+              <p>Earn points with every booking and unlock perks.</p>
+            </div>
+            <div class="rewards-summary">
+              <div>
+                <span>Points</span>
+                <strong id="reward-points">120</strong>
+              </div>
+              <div>
+                <span>Tier</span>
+                <strong id="reward-tier">Silver</strong>
+              </div>
+              <div>
+                <span>Next reward</span>
+                <strong>Free 5 min</strong>
+              </div>
+            </div>
+            <div class="reward-card">
+              <p>Pro tip: Book three slots in a week to earn premium access and faster arrival estimates.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="station-details">
+        <section class="panel card-panel station-detail-panel grid">
+          <div class="station-summary card-panel">
+            <div class="panel-header">
+              <h2>Station Overview</h2>
+              <p>Detailed information on your selected charging point.</p>
+            </div>
+            <div class="station-info" id="station-info"></div>
+          </div>
+          <div class="reviews-panel card-panel">
+            <div class="panel-header">
+              <h3>User Reviews</h3>
+            </div>
+            <div id="station-reviews"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="history">
+        <section class="panel card-panel history-panel">
+          <div class="panel-header">
+            <h2>Booking History</h2>
+            <p>Review past trips and rebook your preferred stations.</p>
+          </div>
+          <div id="history-list" class="history-list"></div>
+        </section>
+      </section>
+
+      <section class="page" id="faq">
+        <section class="panel card-panel faq-panel">
+          <div class="panel-header">
+            <h2>FAQ & Help</h2>
+            <p>Answers to common booking and charging questions.</p>
+          </div>
+          <div class="faq-grid">
+            <article>
+              <h3>How do I book a slot?</h3>
+              <p>Choose your station, select a time, and confirm. Your booking is saved locally and instantly available on your status page.</p>
+            </article>
+            <article>
+              <h3>What is the cancellation policy?</h3>
+              <p>You can cancel any booking up to 15 minutes before start time. A cancelled slot moves to your history with a red status.</p>
+            </article>
+            <article>
+              <h3>Can I change charging speed?</h3>
+              <p>Yes — fast charging is quicker but slightly more expensive. Slow charging is ideal for overnight or low-cost sessions.</p>
+            </article>
+            <article>
+              <h3>How do I contact support?</h3>
+              <p>Use the contact form or social icons below. We provide live updates for approaching bookings and help with rescheduling.</p>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="about">
+        <section class="panel card-panel about-panel grid">
+          <div>
+            <div class="panel-header">
+              <h2>About EV ChargeLink</h2>
+            </div>
+            <p>We connect EV drivers with reliable charging stations while supporting sustainable energy and faster journeys. Our mission is to make EV travel intuitive, affordable, and eco-friendly.</p>
+            <div class="info-cards">
+              <div class="info-card">
+                <h3>Our Mission</h3>
+                <p>Reduce range anxiety with real-time bookings, smart station suggestions, and access to trusted charging hubs.</p>
+              </div>
+              <div class="info-card">
+                <h3>Sustainability</h3>
+                <p>Partnering with green networks to minimize emissions and reward longer stays with loyalty points.</p>
+              </div>
+              <div class="info-card">
+                <h3>Partners</h3>
+                <p>Working with urban charging operators, fleet services, and local green initiatives to expand coverage.</p>
+              </div>
+            </div>
+          </div>
+          <div class="about-visual card-panel">
+            <h3>Why choose us?</h3>
+            <ul>
+              <li>Instant booking preview and cost estimates</li>
+              <li>Responsive dashboard for every device</li>
+              <li>Rewards and loyalty tracking</li>
+            </ul>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="contact">
+        <section class="panel card-panel contact-panel grid">
+          <div class="contact-form card-panel">
+            <div class="panel-header">
+              <h2>Contact Support</h2>
+              <p>Send us a message and we’ll respond within one business day.</p>
+            </div>
+            <form id="contact-form">
+              <label>
+                Name
+                <input type="text" id="contact-name" placeholder="Your full name" required />
+              </label>
+              <label>
+                Email
+                <input type="email" id="contact-email" placeholder="you@example.com" required />
+              </label>
+              <label>
+                Message
+                <textarea id="contact-message" rows="5" placeholder="How can we help?" required></textarea>
+              </label>
+              <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+          </div>
+          <div class="contact-info card-panel">
+            <div class="panel-header">
+              <h3>Reach Us</h3>
+            </div>
+            <p>Email: support@evchargelink.com</p>
+            <p>Phone: +1 (555) 321-7890</p>
+            <p>Address: 210 Greenway Avenue, Downtown</p>
+            <div class="social-links">
+              <a href="#" aria-label="Facebook">Fb</a>
+              <a href="#" aria-label="Twitter">Tw</a>
+              <a href="#" aria-label="Instagram">Ig</a>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>EV ChargeLink</strong>
+        <p>Fast, friendly EV booking for every ride.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#home" data-page="home">Home</a>
+        <a href="#booking" data-page="booking">Book</a>
+        <a href="#status" data-page="status">Status</a>
+        <a href="#faq" data-page="faq">FAQ</a>
+        <a href="#contact" data-page="contact">Contact</a>
+      </div>
+      <div class="footer-note">
+        <p>© 2026 EV ChargeLink. Built for modern drivers.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
